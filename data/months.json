@@ -1,0 +1,38 @@
+[
+  {
+    "id": "2026-06",
+    "label": "June 2026",
+    "order": 1,
+    "active": true
+  },
+  {
+    "id": "2026-07",
+    "label": "July 2026",
+    "order": 2,
+    "active": true
+  },
+  {
+    "id": "2026-08",
+    "label": "August 2026",
+    "order": 3,
+    "active": true
+  },
+  {
+    "id": "2026-09",
+    "label": "September 2026",
+    "order": 4,
+    "active": true
+  },
+  {
+    "id": "2026-10",
+    "label": "October 2026",
+    "order": 5,
+    "active": true
+  },
+  {
+    "id": "2026-11",
+    "label": "November 2026",
+    "order": 6,
+    "active": true
+  }
+]

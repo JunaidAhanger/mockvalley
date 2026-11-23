@@ -1,0 +1,127 @@
+[
+  {
+    "id": "Q-000001",
+    "status": "active",
+    "is_free": true,
+    "topic_id": "jk-geography",
+    "month_id": null,
+    "question": "Which river is known as the 'Vitasta' in ancient Sanskrit texts and flows through Srinagar?",
+    "options": {
+      "A": "Chenab",
+      "B": "Jhelum",
+      "C": "Tawi",
+      "D": "Ravi"
+    },
+    "correct": "B",
+    "explanation": "The Jhelum River was called Vitasta in ancient Sanskrit texts and Vyeth in Kashmiri. It rises at Verinag Spring and flows through Srinagar.",
+    "option_notes": {
+      "A": "Chenab was known as Askini in ancient texts and flows through the Jammu region.",
+      "C": "Tawi is a major left-bank tributary of the Chenab that flows through Jammu city.",
+      "D": "Ravi was known as Parushni or Iravati and forms part of the southern boundary of J&K."
+    },
+    "source": "Geography of Jammu & Kashmir, NCERT / J&K Board",
+    "last_verified": "2026-11-20",
+    "difficulty": "easy",
+    "tags": ["rivers", "kashmir-valley", "ancient-names"]
+  },
+  {
+    "id": "Q-000002",
+    "status": "active",
+    "is_free": true,
+    "topic_id": "jk-geography",
+    "month_id": null,
+    "question": "Consider the following statements regarding Wular Lake:\n1. It is fed primarily by the Jhelum River.\n2. It was designated as a Ramsar Wetland of International Importance in 1990.\nWhich of the statements given above is/are correct?",
+    "options": {
+      "A": "1 only",
+      "B": "2 only",
+      "C": "Both 1 and 2",
+      "D": "Neither 1 nor 2"
+    },
+    "correct": "C",
+    "explanation": "Both statements are correct. Wular Lake in Bandipora district is fed by the Jhelum River and was designated as a Ramsar site on 23 March 1990.",
+    "option_notes": {
+      "A": "Statement 2 is also correct; Wular Lake gained Ramsar status in 1990.",
+      "B": "Statement 1 is also correct; the Jhelum River flows into and out of Wular Lake.",
+      "D": "Both statements are factually accurate."
+    },
+    "source": "Ramsar Sites Information Service / Ministry of Environment, Forest and Climate Change",
+    "last_verified": "2026-11-20",
+    "difficulty": "moderate",
+    "tags": ["lakes", "ramsar-sites", "bandipora"]
+  },
+  {
+    "id": "Q-000003",
+    "status": "active",
+    "is_free": true,
+    "topic_id": "jk-geography",
+    "month_id": null,
+    "question": "Arrange the following mountain passes of Jammu & Kashmir from West to East:\n1. Pir Panjal Pass\n2. Banihal Pass\n3. Zoji La\nSelect the correct order using the codes given below:",
+    "options": {
+      "A": "1 - 2 - 3",
+      "B": "2 - 1 - 3",
+      "C": "1 - 3 - 2",
+      "D": "3 - 2 - 1"
+    },
+    "correct": "A",
+    "explanation": "Moving from west to east, Pir Panjal Pass lies west of Banihal Pass in the Pir Panjal range, while Zoji La lies further east on the Great Himalayan range connecting Kashmir Valley to Ladakh.",
+    "option_notes": {
+      "B": "Pir Panjal Pass lies to the west of Banihal Pass, not east of it.",
+      "C": "Zoji La is the easternmost among the three passes, located near Sonamarg.",
+      "D": "This reverses the geographical order from east to west."
+    },
+    "source": "Survey of India Physical Map of J&K",
+    "last_verified": "2026-11-20",
+    "difficulty": "hard",
+    "tags": ["mountain-passes", "pir-panjal", "himalayas"]
+  },
+  {
+    "id": "Q-000004",
+    "status": "active",
+    "is_free": false,
+    "topic_id": "current-events",
+    "month_id": "2026-06",
+    "question": "On which date is the International Day of Yoga observed annually across India and worldwide?",
+    "options": {
+      "A": "June 5",
+      "B": "June 21",
+      "C": "June 29",
+      "D": "July 11"
+    },
+    "correct": "B",
+    "explanation": "The United Nations proclaimed June 21 as the International Day of Yoga following India's proposal at the UN General Assembly.",
+    "option_notes": {
+      "A": "June 5 is observed as World Environment Day.",
+      "C": "June 29 is observed in India as National Statistics Day.",
+      "D": "July 11 is observed as World Population Day."
+    },
+    "source": "Press Information Bureau (PIB), Government of India",
+    "last_verified": "2026-06-25",
+    "difficulty": "easy",
+    "tags": ["important-days", "june-2026"]
+  },
+  {
+    "id": "Q-000005",
+    "status": "active",
+    "is_free": false,
+    "topic_id": "current-events",
+    "month_id": "2026-06",
+    "question": "With reference to the annual Amarnath Yatra pilgrimage route in Jammu & Kashmir, consider the following pairs:\n1. Pahalgam Route — Chandanwari and Sheshnag\n2. Baltal Route — Domel and Barari Marg\nWhich of the pairs given above is/are correctly matched?",
+    "options": {
+      "A": "1 only",
+      "B": "2 only",
+      "C": "Both 1 and 2",
+      "D": "Neither 1 nor 2"
+    },
+    "correct": "C",
+    "explanation": "Both pilgrimage routes are accurately matched. The traditional longer route starts from Pahalgam via Chandanwari, Pissu Top, Sheshnag, and Panchtarni, whereas the shorter steep route starts from Baltal via Domel and Barari Marg.",
+    "option_notes": {
+      "A": "Pair 2 is also correct; Domel and Barari Marg are key halts on the Baltal axis.",
+      "B": "Pair 1 is also correct; Chandanwari and Sheshnag lie on the Pahalgam axis.",
+      "D": "Both pairs accurately describe the two official Yatra routes."
+    },
+    "source": "Shri Amarnathji Shrine Board (SASB) Official Advisory",
+    "last_verified": "2026-06-28",
+    "difficulty": "moderate",
+    "tags": ["amarnath-yatra", "jk-current-affairs", "june-2026"]
+  }
+]

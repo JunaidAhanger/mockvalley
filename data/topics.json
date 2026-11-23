@@ -1,0 +1,86 @@
+[
+  {
+    "id": "current-events",
+    "name": "Current events of national and international importance",
+    "order": 1,
+    "active": true
+  },
+  {
+    "id": "political-physical-divisions",
+    "name": "Political and physical divisions of world and India",
+    "order": 2,
+    "active": true
+  },
+  {
+    "id": "indian-culture-freedom",
+    "name": "Indian culture, heritage and freedom struggle",
+    "order": 3,
+    "active": true
+  },
+  {
+    "id": "transport-communication",
+    "name": "Transport and communication",
+    "order": 4,
+    "active": true
+  },
+  {
+    "id": "demography-census",
+    "name": "Demography: census, its features and functions",
+    "order": 5,
+    "active": true
+  },
+  {
+    "id": "rivers-lakes-india",
+    "name": "Important rivers and lakes in India",
+    "order": 6,
+    "active": true
+  },
+  {
+    "id": "weather-climate-crops",
+    "name": "Weather, climate, crops and means of transport of India",
+    "order": 7,
+    "active": true
+  },
+  {
+    "id": "environment-ecology",
+    "name": "Environment, ecology and bio-diversity",
+    "order": 8,
+    "active": true
+  },
+  {
+    "id": "jk-history",
+    "name": "J&K UT: History",
+    "order": 9,
+    "active": true
+  },
+  {
+    "id": "jk-economy",
+    "name": "J&K UT: Economy",
+    "order": 10,
+    "active": true
+  },
+  {
+    "id": "jk-geography",
+    "name": "J&K UT: Geography",
+    "order": 11,
+    "active": true
+  },
+  {
+    "id": "jk-heritage-culture",
+    "name": "J&K UT: Heritage and culture",
+    "order": 12,
+    "active": true
+  },
+  {
+    "id": "jk-tourist-destinations",
+    "name": "J&K UT: Important tourist destinations",
+    "order": 13,
+    "active": true
+  },
+  {
+    "id": "jk-reorganisation-act-2019",
+    "name": "J&K Reorganisation Act, 2019",
+    "order": 14,
+    "active": true
+  }
+]

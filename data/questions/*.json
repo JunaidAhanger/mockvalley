@@ -1,0 +1,25 @@
+{
+  "id": "Q-000123",
+  "status": "active",
+  "is_free": true,
+  "topic_id": "jk-geography",
+  "month_id": null,
+  "question": "Which river is known as the 'Vitasta' in ancient Sanskrit texts?",
+  "options": {
+    "A": "Chenab",
+    "B": "Jhelum",
+    "C": "Tawi",
+    "D": "Ravi"
+  },
+  "correct": "B",
+  "explanation": "The Jhelum River was called Vitasta in ancient Sanskrit texts.",
+  "option_notes": {
+    "A": "Chenab was known as Askini.",
+    "C": "Tawi is a tributary of the Chenab.",
+    "D": "Ravi was known as Parushni."
+  },
+  "source": "NCERT / J&K Board",
+  "last_verified": "2026-11-20",
+  "difficulty": "easy",
+  "tags": ["rivers", "kashmir-valley"]
+}

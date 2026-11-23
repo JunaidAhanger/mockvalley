@@ -1,0 +1,27 @@
+[
+  {
+    "id": "Q-000000",
+    "status": "active",
+    "is_free": false,
+    "topic_id": "jk-geography",
+    "month_id": null,
+    "question": "Write the full question text here.",
+    "options": {
+      "A": "First option",
+      "B": "Second option",
+      "C": "Third option",
+      "D": "Fourth option"
+    },
+    "correct": "A",
+    "explanation": "Explain clearly why option A is right.",
+    "option_notes": {
+      "B": "Why option B is wrong.",
+      "C": "Why option C is wrong.",
+      "D": "Why option D is wrong."
+    },
+    "source": "Name of official book, gazette, or news source",
+    "last_verified": "2026-11-23",
+    "difficulty": "easy",
+    "tags": ["sample-tag"]
+  }
+]
