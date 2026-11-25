@@ -2,6 +2,7 @@ import { useState } from "react";
 import { BottomNav, type NavTab } from "./components/BottomNav";
 import { isSupabaseConfigured } from "./lib/supabase";
 import { HomePage } from "./pages/HomePage";
+import { PracticePage } from "./pages/PracticePage";
 
 export function App() {
   const [activeTab, setActiveTab] = useState<NavTab>("home");
@@ -9,13 +10,12 @@ export function App() {
 
   const handleOpenSection = (tab: NavTab) => {
     setActiveTab(tab);
-    if (tab === "home") {
+    if (tab === "home" || tab === "practice") {
       setPlaceholderNote(null);
       return;
     }
 
-    const labels: Record<Exclude<NavTab, "home">, string> = {
-      practice: "Practice by Topic screen will be built in the next step.",
+    const labels: Record<"current-affairs" | "exam", string> = {
       "current-affairs": "Current Affairs month picker will be built in a later step.",
       exam: "Timed Exam Mode will be built in a later step.",
     };
@@ -33,7 +33,11 @@ export function App() {
         </div>
       )}
 
-      <HomePage onOpenSection={handleOpenSection} statusMessage={placeholderNote} />
+      {activeTab === "practice" ? (
+        <PracticePage />
+      ) : (
+        <HomePage onOpenSection={handleOpenSection} statusMessage={placeholderNote} />
+      )}
 
       <BottomNav activeTab={activeTab} onSelectTab={handleOpenSection} />
     </div>
