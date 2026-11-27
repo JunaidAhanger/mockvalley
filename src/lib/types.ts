@@ -10,6 +10,8 @@ export interface TopicSummary {
   moderate_count: number;
   hard_count: number;
   total_count: number;
+  free_used_count: number;
+  free_quota_limit: number;
 }
 
 export interface PracticeQuestion {
@@ -25,4 +27,13 @@ export interface AnswerReview {
   correct: OptionKey;
   explanation: string;
   option_notes: Partial<Record<OptionKey, string>>;
+}
+
+export class QuotaReachedError extends Error {
+  readonly code = "QUOTA_REACHED";
+
+  constructor(message = "You have used all 10 free questions for this topic.") {
+    super(message);
+    this.name = "QuotaReachedError";
+  }
 }

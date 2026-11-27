@@ -1,4 +1,4 @@
-export type NavTab = "home" | "practice" | "current-affairs" | "exam";
+export type NavTab = "home" | "practice" | "current-affairs" | "exam" | "profile";
 
 interface BottomNavProps {
   activeTab: NavTab;
@@ -10,6 +10,7 @@ const NAV_ITEMS: Array<{ id: NavTab; label: string }> = [
   { id: "practice", label: "Practice" },
   { id: "current-affairs", label: "Current" },
   { id: "exam", label: "Exam" },
+  { id: "profile", label: "Profile" },
 ];
 
 export function BottomNav({ activeTab, onSelectTab }: BottomNavProps) {

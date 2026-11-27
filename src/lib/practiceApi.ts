@@ -1,46 +1,68 @@
+import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
-import type {
-  AnswerReview,
-  DifficultyFilter,
-  OptionKey,
-  PracticeQuestion,
-  TopicSummary,
+import {
+  QuotaReachedError,
+  type AnswerReview,
+  type DifficultyFilter,
+  type OptionKey,
+  type PracticeQuestion,
+  type TopicSummary,
 } from "./types";
 
-// Temporary Task 4 auth: signs in anonymously if no session exists yet.
-// Anonymous users have no active pass in `passes`, so is_paid() evaluates to false.
-export async function ensureAuthSession(): Promise<string> {
+export async function getCurrentSession(): Promise<Session | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data.session;
+}
+
+export function onAuthStateChange(callback: (user: User | null) => void): () => void {
+  if (!supabase) return () => {};
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    callback(session?.user ?? null);
+  });
+  return () => subscription.unsubscribe();
+}
+
+export async function signInWithGoogle(): Promise<void> {
   if (!supabase) {
     throw new Error("Supabase is not configured. Check your .env variables.");
   }
 
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin,
+    },
+  });
 
-  if (sessionError) {
-    throw new Error(sessionError.message);
+  if (error) {
+    throw new Error(error.message);
   }
+}
 
-  if (session?.user?.id) {
-    return session.user.id;
+export async function signOutUser(): Promise<void> {
+  if (!supabase) return;
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    throw new Error(error.message);
   }
+}
 
-  const { data, error } = await supabase.auth.signInAnonymously();
-  if (error || !data.user) {
-    throw new Error(
-      error?.message ||
-        "Could not start a guest session. Make sure Anonymous Sign-Ins is enabled in Supabase Auth."
-    );
+export async function ensureUserProfile(): Promise<void> {
+  if (!supabase) return;
+  const { error } = await supabase.rpc("ensure_profile");
+  if (error) {
+    throw new Error(`Could not initialize user profile: ${error.message}`);
   }
-
-  return data.user.id;
 }
 
 export async function checkIsPaid(): Promise<boolean> {
   if (!supabase) return false;
-  await ensureAuthSession();
 
   const { data, error } = await supabase.rpc("is_paid");
   if (error) {
@@ -53,7 +75,6 @@ export async function fetchTopics(): Promise<TopicSummary[]> {
   if (!supabase) {
     throw new Error("Supabase is not configured.");
   }
-  await ensureAuthSession();
 
   const { data, error } = await supabase.rpc("get_topics");
   if (error) {
@@ -69,7 +90,6 @@ export async function fetchQuestionIds(
   if (!supabase) {
     throw new Error("Supabase is not configured.");
   }
-  await ensureAuthSession();
 
   const { data, error } = await supabase.rpc("get_question_list", {
     p_topic_id: topicId,
@@ -88,7 +108,6 @@ export async function fetchQuestionById(questionId: string): Promise<PracticeQue
   if (!supabase) {
     throw new Error("Supabase is not configured.");
   }
-  await ensureAuthSession();
 
   const { data, error } = await supabase.rpc("get_question", {
     p_question_id: questionId,
@@ -113,7 +132,6 @@ export async function submitPracticeAnswer(
   if (!supabase) {
     throw new Error("Supabase is not configured.");
   }
-  await ensureAuthSession();
 
   const { data, error } = await supabase.rpc("submit_answer", {
     p_question_id: questionId,
@@ -121,6 +139,11 @@ export async function submitPracticeAnswer(
   });
 
   if (error) {
+    if (error.message.includes("QUOTA_REACHED")) {
+      throw new QuotaReachedError(
+        "You have reached the free limit of 10 distinct questions for this topic. You can still retry questions you already attempted, or upgrade for full access."
+      );
+    }
     throw new Error(`Could not submit answer: ${error.message}`);
   }
 

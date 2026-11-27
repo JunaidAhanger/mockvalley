@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { QuestionPaletteSheet } from "../components/QuestionPaletteSheet";
 import {
   checkIsPaid,
@@ -7,13 +7,18 @@ import {
   fetchTopics,
   submitPracticeAnswer,
 } from "../lib/practiceApi";
-import type {
-  AnswerReview,
-  DifficultyFilter,
-  OptionKey,
-  PracticeQuestion,
-  TopicSummary,
+import {
+  QuotaReachedError,
+  type AnswerReview,
+  type DifficultyFilter,
+  type OptionKey,
+  type PracticeQuestion,
+  type TopicSummary,
 } from "../lib/types";
+
+interface PracticePageProps {
+  onOpenUpgrade: () => void;
+}
 
 const OPTION_KEYS: OptionKey[] = ["A", "B", "C", "D"];
 
@@ -24,7 +29,7 @@ const DIFFICULTY_FILTERS: Array<{ id: DifficultyFilter; label: string }> = [
   { id: "hard", label: "Hard" },
 ];
 
-export function PracticePage() {
+export function PracticePage({ onOpenUpgrade }: PracticePageProps) {
   const [topics, setTopics] = useState<TopicSummary[]>([]);
   const [isPaid, setIsPaid] = useState(false);
   const [loadingTopics, setLoadingTopics] = useState(true);
@@ -34,7 +39,6 @@ export function PracticePage() {
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
   const [showUpgradeNote, setShowUpgradeNote] = useState(false);
 
-  // Session state for the chosen topic + difficulty
   const [questionIds, setQuestionIds] = useState<string[]>([]);
   const [loadingList, setLoadingList] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
@@ -49,43 +53,36 @@ export function PracticePage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
 
-  // 1. Load active topics and caller pass status on mount
+  const refreshTopicsAndPaid = useCallback(async (selectInitialIfEmpty = false) => {
+    const [paidStatus, topicList] = await Promise.all([checkIsPaid(), fetchTopics()]);
+    setIsPaid(paidStatus);
+    setTopics(topicList);
+    if (selectInitialIfEmpty && topicList.length > 0) {
+      const firstWithQuestions = topicList.find((t) => t.total_count > 0) ?? topicList[0];
+      setSelectedTopicId((prev) => prev || firstWithQuestions.id);
+    }
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
+    setLoadingTopics(true);
+    setTopicsError(null);
 
-    async function loadInitial() {
-      setLoadingTopics(true);
-      setTopicsError(null);
-      try {
-        const [paidStatus, topicList] = await Promise.all([checkIsPaid(), fetchTopics()]);
-        if (cancelled) return;
-        setIsPaid(paidStatus);
-        setTopics(topicList);
-        if (topicList.length > 0) {
-          // Default to first topic that has questions if available, else first active topic
-          const firstWithQuestions = topicList.find((t) => t.total_count > 0) ?? topicList[0];
-          setSelectedTopicId(firstWithQuestions.id);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setTopicsError((err as Error).message);
-        }
-      } finally {
-        if (!cancelled) {
-          setLoadingTopics(false);
-        }
-      }
-    }
+    refreshTopicsAndPaid(true)
+      .catch((err) => {
+        if (!cancelled) setTopicsError((err as Error).message);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingTopics(false);
+      });
 
-    loadInitial();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [refreshTopicsAndPaid]);
 
   const selectedTopic = topics.find((t) => t.id === selectedTopicId) ?? null;
 
-  // Helper to check if a difficulty filter has 0 free questions for an unpaid user
   const isFilterLocked = (filterId: DifficultyFilter): boolean => {
     if (isPaid || !selectedTopic || filterId === "all") return false;
     if (filterId === "easy") return selectedTopic.easy_count === 0;
@@ -93,7 +90,6 @@ export function PracticePage() {
     return selectedTopic.hard_count === 0;
   };
 
-  // 2. Whenever topic or difficulty changes, rebuild the ordered question list and reset palette index
   useEffect(() => {
     if (!selectedTopicId) return;
 
@@ -115,19 +111,13 @@ export function PracticePage() {
 
     fetchQuestionIds(selectedTopicId, difficulty)
       .then((ids) => {
-        if (!cancelled) {
-          setQuestionIds(ids);
-        }
+        if (!cancelled) setQuestionIds(ids);
       })
       .catch((err) => {
-        if (!cancelled) {
-          setListError((err as Error).message);
-        }
+        if (!cancelled) setListError((err as Error).message);
       })
       .finally(() => {
-        if (!cancelled) {
-          setLoadingList(false);
-        }
+        if (!cancelled) setLoadingList(false);
       });
 
     return () => {
@@ -140,7 +130,6 @@ export function PracticePage() {
   const currentQuestion = currentQuestionId ? questionCache[currentQuestionId] ?? null : null;
   const currentReview = currentQuestionId ? answersById[currentQuestionId] ?? null : null;
 
-  // 3. Fetch the active question's safe text/options/difficulty when currentQuestionId changes
   useEffect(() => {
     if (!currentQuestionId || questionCache[currentQuestionId]) {
       setQuestionError(null);
@@ -153,19 +142,13 @@ export function PracticePage() {
 
     fetchQuestionById(currentQuestionId)
       .then((q) => {
-        if (!cancelled) {
-          setQuestionCache((prev) => ({ ...prev, [q.id]: q }));
-        }
+        if (!cancelled) setQuestionCache((prev) => ({ ...prev, [q.id]: q }));
       })
       .catch((err) => {
-        if (!cancelled) {
-          setQuestionError((err as Error).message);
-        }
+        if (!cancelled) setQuestionError((err as Error).message);
       })
       .finally(() => {
-        if (!cancelled) {
-          setLoadingQuestion(false);
-        }
+        if (!cancelled) setLoadingQuestion(false);
       });
 
     return () => {
@@ -181,15 +164,11 @@ export function PracticePage() {
 
   const handleSelectDifficulty = (filterId: DifficultyFilter) => {
     setDifficulty(filterId);
-    if (isFilterLocked(filterId)) {
-      setShowUpgradeNote(true);
-    } else {
-      setShowUpgradeNote(false);
-    }
+    setShowUpgradeNote(isFilterLocked(filterId));
   };
 
   const handleChooseOption = async (optionKey: OptionKey) => {
-    if (!currentQuestionId || currentReview || submitting) return;
+    if (!currentQuestionId || submitting) return;
 
     setSubmitting(true);
     setSubmitError(null);
@@ -199,11 +178,27 @@ export function PracticePage() {
         ...prev,
         [currentQuestionId]: review,
       }));
+      // Refresh topic free-quota usage counter on the topic screen
+      await refreshTopicsAndPaid(false);
     } catch (err) {
+      if (err instanceof QuotaReachedError) {
+        onOpenUpgrade();
+        return;
+      }
       setSubmitError((err as Error).message);
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleRetryCurrentQuestion = () => {
+    if (!currentQuestionId) return;
+    setAnswersById((prev) => {
+      const next = { ...prev };
+      delete next[currentQuestionId];
+      return next;
+    });
+    setSubmitError(null);
   };
 
   const getOptionNote = (optKey: OptionKey): string => {
@@ -235,15 +230,26 @@ export function PracticePage() {
     );
   }
 
+  const usedCount = selectedTopic ? Math.min(selectedTopic.free_used_count, 10) : 0;
+
   return (
     <main className="page-container">
       <section className="controls-card" aria-label="Topic and difficulty selection">
-        <label htmlFor="topic-select" className="field-label">
-          Practice by Topic
-        </label>
+        <div className="topic-header-row">
+          <label htmlFor="topic-select" className="field-label" style={{ marginBottom: 0 }}>
+            Practice by Topic
+          </label>
+          {!isPaid && selectedTopic && (
+            <span className="quota-badge" aria-label="Free quota usage">
+              {usedCount} of {selectedTopic.free_quota_limit || 10} free questions used
+            </span>
+          )}
+        </div>
+
         <select
           id="topic-select"
           className="topic-select"
+          style={{ marginTop: 6 }}
           value={selectedTopicId}
           onChange={(e) => handleSelectTopic(e.target.value)}
         >
@@ -284,9 +290,16 @@ export function PracticePage() {
             <p className="upgrade-title">🔒 Paid Pass Required for This Level</p>
             <p className="upgrade-desc">
               Free preview has no questions at the <strong>{difficulty}</strong> level for this
-              topic. Upgrade to the 3-month All-Access Pass in the next update to unlock every
-              difficulty, Current Affairs, and Exam Mode.
+              topic.
             </p>
+            <button
+              type="button"
+              className="step-btn primary-step"
+              style={{ width: "100%", marginTop: 10, minHeight: 42 }}
+              onClick={onOpenUpgrade}
+            >
+              See Upgrade Options
+            </button>
           </div>
         )}
       </section>
@@ -414,6 +427,13 @@ export function PracticePage() {
                       : `Wrong — Correct Answer: ${currentReview.correct}`}
                   </p>
                   <p className="feedback-explanation">{currentReview.explanation}</p>
+                  <button
+                    type="button"
+                    className="retry-btn"
+                    onClick={handleRetryCurrentQuestion}
+                  >
+                    Try Question Again
+                  </button>
                 </div>
               )}
             </article>
