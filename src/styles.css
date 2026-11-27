@@ -718,3 +718,51 @@ body {
   font-weight: 700;
   cursor: pointer;
 }
+/* === Task 6: Plans & Razorpay Checkout === */
+
+.plan-status-card,
+.plan-option-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.plans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.plan-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plan-card-title {
+  margin: 0;
+  font-size: 1.12rem;
+}
+
+.plan-duration {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.plan-price {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--primary);
+  white-space: nowrap;
+}
+
+.plan-card-desc {
+  margin: 10px 0 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--muted);
+}

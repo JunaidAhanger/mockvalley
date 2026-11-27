@@ -1,13 +1,18 @@
 interface UpgradePageProps {
   onBackToPractice: () => void;
   onOpenProfile: () => void;
+  onOpenMyPlan: () => void;
 }
 
-export function UpgradePage({ onBackToPractice, onOpenProfile }: UpgradePageProps) {
+export function UpgradePage({
+  onBackToPractice,
+  onOpenProfile,
+  onOpenMyPlan,
+}: UpgradePageProps) {
   return (
     <main className="page-container">
       <section className="upgrade-screen-card">
-        <p className="eyebrow">3-Month All-Access Pass</p>
+        <p className="eyebrow">All-Access Pass</p>
         <h1 className="app-title">Unlock Full MockValley Access</h1>
         <p className="subtitle">
           Free accounts include <strong>is_free</strong> questions up to{" "}
@@ -19,21 +24,16 @@ export function UpgradePage({ onBackToPractice, onOpenProfile }: UpgradePageProp
           <li>All questions across every active JKSSB topic and difficulty level</li>
           <li>Monthly Current Affairs starting June 2026</li>
           <li>Timed Exam Mode with +1 / -0.25 scoring and full review</li>
-          <li>Valid for 3 months per pass</li>
+          <li>Choose a 1-month or 3-month pass on the next screen</li>
         </ul>
-
-        <div className="notice-banner" role="status">
-          Online checkout via Razorpay will be connected in the next task.
-        </div>
 
         <button
           type="button"
           className="step-btn primary-step"
           style={{ width: "100%", marginBottom: 10 }}
-          disabled
-          aria-disabled="true"
+          onClick={onOpenMyPlan}
         >
-          Upgrade Pass (Coming in Task 6)
+          Choose a Pass (My Plan)
         </button>
 
         <div className="nav-actions-row">

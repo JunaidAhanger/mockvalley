@@ -10,73 +10,75 @@ import {
 import { isSupabaseConfigured } from "./lib/supabase";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
+import { MyPlanPage } from "./pages/MyPlanPage";
 import { PracticePage } from "./pages/PracticePage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { UpgradePage } from "./pages/UpgradePage";
 
-type ScreenMode = "nav" | "upgrade";
+type ScreenMode = "nav" | "upgrade" | "plan";
 
 export function App() {
+  const [activeTab, setActiveTab] = useState<NavTab>("home");
+  const [screenMode, setScreenMode] = useState<ScreenMode>("nav");
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [isPaid, setIsPaid] = useState(false);
-
-  const [activeTab, setActiveTab] = useState<NavTab>("home");
-  const [screenMode, setScreenMode] = useState<ScreenMode>("nav");
   const [placeholderNote, setPlaceholderNote] = useState<string | null>(null);
 
   useEffect(() => {
-    let mounted = true;
+    let active = true;
 
     getCurrentSession()
       .then(async (session) => {
-        if (!mounted) return;
+        if (!active) return;
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         if (currentUser) {
           await ensureUserProfile().catch(() => {});
           const paid = await checkIsPaid().catch(() => false);
-          if (mounted) setIsPaid(paid);
+          if (active) setIsPaid(paid);
         }
       })
       .finally(() => {
-        if (mounted) setAuthLoading(false);
+        if (active) setAuthLoading(false);
       });
 
     const unsubscribe = onAuthStateChange(async (nextUser) => {
-      if (!mounted) return;
+      if (!active) return;
       setUser(nextUser);
       if (nextUser) {
         await ensureUserProfile().catch(() => {});
         const paid = await checkIsPaid().catch(() => false);
-        if (mounted) setIsPaid(paid);
+        if (active) setIsPaid(paid);
       } else {
         setIsPaid(false);
+        setScreenMode("nav");
       }
     });
 
     return () => {
-      mounted = false;
+      active = false;
       unsubscribe();
     };
   }, []);
 
-  const handleOpenSection = (tab: NavTab) => {
+  const handleSelectTab = (tab: NavTab) => {
     setScreenMode("nav");
     setActiveTab(tab);
+
     if (tab === "home" || tab === "practice" || tab === "profile") {
       setPlaceholderNote(null);
       return;
     }
 
-    if (tab === "current-affairs") {
-      setPlaceholderNote("Current Affairs month picker will be built in a later step.");
-    } else if (tab === "exam") {
-      setPlaceholderNote("Timed Exam Mode will be built in a later step.");
-    }
+    const labels: Record<"current-affairs" | "exam", string> = {
+      "current-affairs": "Current Affairs month picker will be built in a later step.",
+      exam: "Timed Exam Mode will be built in a later step.",
+    };
+    setPlaceholderNote(labels[tab]);
   };
 
-  const renderBody = () => {
+  const renderScreen = () => {
     if (authLoading) {
       return (
         <main className="page-container">
@@ -87,9 +89,25 @@ export function App() {
       );
     }
 
+    if (screenMode === "plan") {
+      if (!user) {
+        return <LoginPage reasonMessage="Sign in with Google to view or buy a pass." />;
+      }
+      return (
+        <MyPlanPage
+          isPaid={isPaid}
+          onPassStateChanged={setIsPaid}
+          onBackToPractice={() => {
+            setScreenMode("nav");
+            setActiveTab("practice");
+          }}
+        />
+      );
+    }
+
     if (screenMode === "upgrade") {
       if (!user) {
-        return <LoginPage reasonMessage="Sign in with Google before viewing pass or upgrade options." />;
+        return <LoginPage reasonMessage="Sign in with Google before viewing pass options." />;
       }
       return (
         <UpgradePage
@@ -101,31 +119,34 @@ export function App() {
             setScreenMode("nav");
             setActiveTab("profile");
           }}
+          onOpenMyPlan={() => setScreenMode("plan")}
         />
       );
     }
 
     if (activeTab === "practice") {
       if (!user) {
-        return <LoginPage reasonMessage="Sign in with Google to start practicing questions." />;
+        return (
+          <LoginPage reasonMessage="Sign in with Google to start practicing by topic." />
+        );
       }
       return <PracticePage onOpenUpgrade={() => setScreenMode("upgrade")} />;
     }
 
     if (activeTab === "profile") {
       if (!user) {
-        return <LoginPage reasonMessage="Sign in with Google to view your profile and plan." />;
+        return <LoginPage reasonMessage="Sign in with Google to view your profile." />;
       }
       return (
         <ProfilePage
           email={user.email ?? null}
           isPaid={isPaid}
-          onOpenUpgrade={() => setScreenMode("upgrade")}
+          onOpenUpgrade={() => setScreenMode("plan")}
         />
       );
     }
 
-    return <HomePage onOpenSection={handleOpenSection} statusMessage={placeholderNote} />;
+    return <HomePage onOpenSection={handleSelectTab} statusMessage={placeholderNote} />;
   };
 
   return (
@@ -139,9 +160,12 @@ export function App() {
         </div>
       )}
 
-      {renderBody()}
+      {renderScreen()}
 
-      <BottomNav activeTab={activeTab} onSelectTab={handleOpenSection} />
+      <BottomNav
+        activeTab={screenMode === "nav" ? activeTab : "profile"}
+        onSelectTab={handleSelectTab}
+      />
     </div>
   );
 }

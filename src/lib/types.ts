@@ -37,3 +37,20 @@ export class QuotaReachedError extends Error {
     this.name = "QuotaReachedError";
   }
 }
+export interface PlanItem {
+  id: string;
+  name: string;
+  description: string;
+  amount_paise: number;
+  duration_days: number;
+  display_order: number;
+}
+
+export interface ActivePassSummary {
+  id: string;
+  plan_id: string;
+  starts_at: string;
+  expires_at: string;
+  status: string;
+  razorpay_payment_id: string;
+}
