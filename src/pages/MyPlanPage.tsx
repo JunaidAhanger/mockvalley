@@ -9,7 +9,9 @@ import {
 import type { ActivePassSummary, PlanItem } from "../lib/types";
 
 interface MyPlanPageProps {
+  isPaid?: boolean;
   onPassStateChanged?: (isPaid: boolean) => void;
+  onBackToPractice?: () => void;
 }
 
 type CheckoutBanner =
@@ -18,7 +20,11 @@ type CheckoutBanner =
   | { type: "error"; message: string }
   | null;
 
-export function MyPlanPage({ onPassStateChanged }: MyPlanPageProps) {
+export function MyPlanPage({
+  isPaid,
+  onPassStateChanged,
+  onBackToPractice,
+}: MyPlanPageProps) {
   const [plans, setPlans] = useState<PlanItem[]>([]);
   const [currentPass, setCurrentPass] = useState<ActivePassSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -127,13 +133,18 @@ export function MyPlanPage({ onPassStateChanged }: MyPlanPageProps) {
   const activePlanObj = currentPass
     ? plans.find((p) => p.id === currentPass.plan_id) ?? null
     : null;
+  const hasActivePass = Boolean(currentPass) || Boolean(isPaid);
 
   return (
     <main className="page-container">
       <section className="plan-status-card" aria-label="Current plan status">
         <p className="eyebrow">My Plan</p>
         <h1 className="app-title">
-          {currentPass ? activePlanObj?.name || currentPass.plan_id : "Free Plan"}
+          {currentPass
+            ? activePlanObj?.name || currentPass.plan_id
+            : isPaid
+              ? "Active Pass"
+              : "Free Plan"}
         </h1>
 
         {currentPass ? (
@@ -149,6 +160,11 @@ export function MyPlanPage({ onPassStateChanged }: MyPlanPageProps) {
               </strong>
             </div>
           </>
+        ) : isPaid ? (
+          <p className="subtitle">
+            Your pass is <strong>active</strong>. Tap Refresh Status to view your latest expiry
+            details.
+          </p>
         ) : (
           <p className="subtitle">
             You do not have an active pass right now. Choose a 1-month or 3-month pass below to
@@ -167,6 +183,17 @@ export function MyPlanPage({ onPassStateChanged }: MyPlanPageProps) {
         >
           Refresh Status
         </button>
+
+        {onBackToPractice && (
+          <button
+            type="button"
+            className="sheet-close-btn"
+            style={{ marginTop: 12, marginLeft: 8 }}
+            onClick={onBackToPractice}
+          >
+            Back to Practice
+          </button>
+        )}
       </section>
 
       {banner && (
@@ -211,7 +238,7 @@ export function MyPlanPage({ onPassStateChanged }: MyPlanPageProps) {
               >
                 {isBusy
                   ? "Starting Checkout..."
-                  : currentPass
+                  : hasActivePass
                     ? `Renew with ${plan.name}`
                     : `Buy ${plan.name} (₹${rupees})`}
               </button>
