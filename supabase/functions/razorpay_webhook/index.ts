@@ -131,6 +131,7 @@ Deno.serve(async (req) => {
       expires_at: row?.expires_at ?? null,
     });
   } catch (err) {
+    console.error("razorpay_webhook error:", err);
     return jsonResponse({ error: (err as Error).message || "Webhook processing failed" }, 500);
   }
 });
